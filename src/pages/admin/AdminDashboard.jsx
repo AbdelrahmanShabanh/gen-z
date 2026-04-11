@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({ products: 0, orders: 0 });
@@ -8,39 +8,46 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem('genzfront_admin_token');
-    
+    const token = localStorage.getItem("genzfront_admin_token");
+
     Promise.all([
-      fetch('/api/products').then(res => res.json()),
-      fetch('/api/admin/orders', { headers: { 'Authorization': `Bearer ${token}` } }).then(res => {
-        if(res.status === 401) {
-          localStorage.removeItem('genzfront_admin_token');
-          navigate('/admin/login');
-          throw new Error('Unauthorized');
+      fetch("/api/products").then((res) => res.json()),
+      fetch("/api/admin/orders", {
+        headers: { Authorization: `Bearer ${token}` },
+      }).then((res) => {
+        if (res.status === 401) {
+          localStorage.removeItem("genzfront_admin_token");
+          navigate("/admin/login");
+          throw new Error("Unauthorized");
         }
         return res.json();
-      })
+      }),
     ])
-    .then(([productsData, ordersData]) => {
-      setStats({
-        products: productsData.length,
-        orders: ordersData.length
+      .then(([productsData, ordersData]) => {
+        setStats({
+          products: productsData.length,
+          orders: ordersData.length,
+        });
+        setRecentOrders(ordersData.slice(0, 5));
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setLoading(false);
       });
-      setRecentOrders(ordersData.slice(0, 5));
-      setLoading(false);
-    })
-    .catch(err => {
-      console.error(err);
-      setLoading(false);
-    });
   }, [navigate]);
 
   const handleLogout = () => {
-    localStorage.removeItem('genzfront_admin_token');
-    window.location.href = '/';
+    localStorage.removeItem("genzfront_admin_token");
+    window.location.href = "/";
   };
 
-  if (loading) return <div className="page-loader"><div className="spinner"/></div>;
+  if (loading)
+    return (
+      <div className="page-loader">
+        <div className="spinner" />
+      </div>
+    );
 
   return (
     <div className="admin-page">
@@ -55,19 +62,34 @@ export default function AdminDashboard() {
         <div className="stat-card">
           <h3 className="stat-title">Total Products</h3>
           <p className="stat-value">{stats.products}</p>
-          <Link to="/admin/products" className="stat-link">Manage Products →</Link>
+          <Link to="/admin/products" className="stat-link">
+            Manage Products →
+          </Link>
         </div>
         <div className="stat-card">
           <h3 className="stat-title">Total Orders</h3>
           <p className="stat-value">{stats.orders}</p>
-          <Link to="/admin/orders" className="stat-link">Manage Orders →</Link>
+          <Link to="/admin/orders" className="stat-link">
+            Manage Orders →
+          </Link>
         </div>
       </div>
 
       <div className="admin-section">
         <div className="section-head">
-          <h2 className="section-label" style={{fontSize: '1rem', color: 'var(--text)'}}>Recent Orders</h2>
-          <Link to="/admin/orders" className="nav-link" style={{fontSize:'0.85rem'}}>View All</Link>
+          <h2
+            className="section-label"
+            style={{ fontSize: "1rem", color: "var(--text)" }}
+          >
+            Recent Orders
+          </h2>
+          <Link
+            to="/admin/orders"
+            className="nav-link"
+            style={{ fontSize: "0.85rem" }}
+          >
+            View All
+          </Link>
         </div>
 
         <div className="table-responsive">
@@ -83,18 +105,33 @@ export default function AdminDashboard() {
               </tr>
             </thead>
             <tbody>
-              {recentOrders.map(order => (
+              {recentOrders.map((order) => (
                 <tr key={order._id}>
-                  <td><span className="mono-id">{order._id.substring(0,8)}</span></td>
+                  <td>
+                    <span className="mono-id">{order._id.substring(0, 8)}</span>
+                  </td>
                   <td>{order.customerName}</td>
                   <td>{order.city}</td>
-                  <td><strong>{order.total} EGP</strong></td>
-                  <td><span className={`badge badge-${order.status}`}>{order.status}</span></td>
+                  <td>
+                    <strong>{order.total} EGP</strong>
+                  </td>
+                  <td>
+                    <span className={`badge badge-${order.status}`}>
+                      {order.status}
+                    </span>
+                  </td>
                   <td>{new Date(order.createdAt).toLocaleDateString()}</td>
                 </tr>
               ))}
               {recentOrders.length === 0 && (
-                <tr><td colSpan="6" style={{textAlign:'center', padding:'2rem'}}>No orders yet.</td></tr>
+                <tr>
+                  <td
+                    colSpan="6"
+                    style={{ textAlign: "center", padding: "2rem" }}
+                  >
+                    No orders yet.
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>

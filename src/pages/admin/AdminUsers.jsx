@@ -8,7 +8,13 @@ export default function AdminUsers() {
         </div>
       </div>
       <div className="admin-section">
-        <p style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
+        <p
+          style={{
+            textAlign: "center",
+            padding: "3rem",
+            color: "var(--text-muted)",
+          }}
+        >
           User management is coming soon...
         </p>
       </div>

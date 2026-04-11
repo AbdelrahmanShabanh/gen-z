@@ -1,34 +1,43 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 export default function AdminOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchOrders = async () => {
-    const token = localStorage.getItem('genzfront_admin_token');
+    const token = localStorage.getItem("genzfront_admin_token");
     try {
-      const res = await fetch('/api/admin/orders', {
-        headers: { 'Authorization': `Bearer ${token}` }
+      const res = await fetch("/api/admin/orders", {
+        headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
       setOrders(data);
-    } catch (err) { console.error(err); }
+    } catch (err) {
+      console.error(err);
+    }
     setLoading(false);
   };
 
-  useEffect(() => { fetchOrders(); }, []);
+  useEffect(() => {
+    fetchOrders();
+  }, []);
 
   const handleStatusChange = async (id, newStatus) => {
-    const token = localStorage.getItem('genzfront_admin_token');
-    
+    const token = localStorage.getItem("genzfront_admin_token");
+
     // Optimistic update
-    setOrders(prev => prev.map(o => o._id === id ? { ...o, status: newStatus } : o));
+    setOrders((prev) =>
+      prev.map((o) => (o._id === id ? { ...o, status: newStatus } : o)),
+    );
 
     try {
       const res = await fetch(`/api/admin/orders/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ status: newStatus })
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status: newStatus }),
       });
       if (!res.ok) {
         // Revert on error
@@ -40,14 +49,21 @@ export default function AdminOrders() {
     }
   };
 
-  if (loading) return <div className="page-loader"><div className="spinner" /></div>;
+  if (loading)
+    return (
+      <div className="page-loader">
+        <div className="spinner" />
+      </div>
+    );
 
   return (
     <div className="admin-page">
       <div className="admin-header">
         <div>
           <h1 className="section-title">Orders</h1>
-          <p className="admin-sub">Manage customer orders and update shipping status</p>
+          <p className="admin-sub">
+            Manage customer orders and update shipping status
+          </p>
         </div>
       </div>
 
@@ -59,29 +75,48 @@ export default function AdminOrders() {
               <th>Customer</th>
               <th>Items</th>
               <th>Total</th>
-              <th style={{textAlign:'right'}}>Status</th>
+              <th style={{ textAlign: "right" }}>Status</th>
             </tr>
           </thead>
           <tbody>
-            {orders.map(order => (
+            {orders.map((order) => (
               <tr key={order._id}>
                 <td>
-                  <div className="mono-id" style={{color:'var(--accent)', fontWeight:700}}>{order._id.substring(0,8)}</div>
-                  <div style={{fontSize:'0.75rem', color:'var(--text-muted)'}}>{new Date(order.createdAt).toLocaleDateString()}</div>
+                  <div
+                    className="mono-id"
+                    style={{ color: "var(--accent)", fontWeight: 700 }}
+                  >
+                    {order._id.substring(0, 8)}
+                  </div>
+                  <div
+                    style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}
+                  >
+                    {new Date(order.createdAt).toLocaleDateString()}
+                  </div>
                 </td>
                 <td>
-                  <div style={{fontWeight:600}}>{order.customerName}</div>
-                  <div style={{fontSize:'0.8rem', color:'var(--text-subtle)'}}>{order.city}</div>
+                  <div style={{ fontWeight: 600 }}>{order.customerName}</div>
+                  <div
+                    style={{ fontSize: "0.8rem", color: "var(--text-subtle)" }}
+                  >
+                    {order.city}
+                  </div>
                 </td>
                 <td>
-                  <span className="items-count-badge">{order.items.reduce((s,i) => s+i.qty, 0)} items</span>
+                  <span className="items-count-badge">
+                    {order.items.reduce((s, i) => s + i.qty, 0)} items
+                  </span>
                 </td>
-                <td><strong>{order.total} EGP</strong></td>
-                <td style={{textAlign:'right'}}>
-                  <select 
+                <td>
+                  <strong>{order.total} EGP</strong>
+                </td>
+                <td style={{ textAlign: "right" }}>
+                  <select
                     className={`status-select bg-${order.status}`}
                     value={order.status}
-                    onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                    onChange={(e) =>
+                      handleStatusChange(order._id, e.target.value)
+                    }
                   >
                     <option value="pending">Pending</option>
                     <option value="processing">Processing</option>
@@ -92,7 +127,14 @@ export default function AdminOrders() {
               </tr>
             ))}
             {orders.length === 0 && (
-              <tr><td colSpan="5" style={{textAlign:'center', padding:'3rem'}}>No orders found.</td></tr>
+              <tr>
+                <td
+                  colSpan="5"
+                  style={{ textAlign: "center", padding: "3rem" }}
+                >
+                  No orders found.
+                </td>
+              </tr>
             )}
           </tbody>
         </table>
