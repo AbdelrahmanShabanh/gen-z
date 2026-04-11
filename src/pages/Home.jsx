@@ -83,7 +83,7 @@ export default function Home() {
 
         <div className="cat-quad">
           <Link to="/products?category=hoodies" className="cat-card">
-            <img src="https://images.unsplash.com/photo-1556821840-3a63f15732ce?auto=format&w=800" alt="Hoodies" className="cat-img"/>
+            <img src="https://images.unsplash.com/photo-1509942774463-acf339cf87d5?auto=format&w=800" alt="Hoodies" className="cat-img"/>
             <div className="cat-overlay">
               <h3 className="cat-title">Hoodies</h3>
               <span className="cat-link">Shop Now →</span>
