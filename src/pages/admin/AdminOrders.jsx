@@ -43,10 +43,12 @@ export default function AdminOrders() {
   if (loading) return <div className="page-loader"><div className="spinner" /></div>;
 
   return (
-    <div className="admin-page container container-sm">
+    <div className="admin-page">
       <div className="admin-header">
-        <h1 className="section-title">Orders</h1>
-        <p className="admin-sub">Manage customer orders and update shipping status</p>
+        <div>
+          <h1 className="section-title">Orders</h1>
+          <p className="admin-sub">Manage customer orders and update shipping status</p>
+        </div>
       </div>
 
       <div className="table-responsive">
@@ -97,6 +99,8 @@ export default function AdminOrders() {
       </div>
 
       <style>{`
+        .admin-page { padding-top: 1rem; padding-bottom: 2rem; }
+        .admin-header { margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
         .items-count-badge { background: var(--bg-elevated); padding: 0.2rem 0.5rem; border-radius: var(--radius-sm); border: 1px solid var(--border-light); font-size: 0.75rem; font-weight: 600; color: var(--text-muted); }
         .status-select {
           appearance: none;

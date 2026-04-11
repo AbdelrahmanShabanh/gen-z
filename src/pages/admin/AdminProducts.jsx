@@ -132,7 +132,7 @@ export default function AdminProducts() {
   if (loading) return <div className="page-loader"><div className="spinner" /></div>;
 
   return (
-    <div className="admin-page container">
+    <div className="admin-page">
       <div className="admin-header">
         <h1 className="section-title">Products</h1>
         <button className="btn btn-primary" onClick={openNew}>+ Add Product</button>
@@ -269,6 +269,8 @@ export default function AdminProducts() {
       )}
 
       <style>{`
+        .admin-page { padding-top: 1rem; padding-bottom: 2rem; }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
         .icon-btn { background: none; border: none; font-size: 0.75rem; font-weight: 700; cursor: pointer; padding: 0.2rem 0.5rem; border-radius: 4px; transition: var(--transition); }
         .icon-btn.edt { color: var(--info); }
         .icon-btn.edt:hover { background: rgba(59,130,246,0.1); }

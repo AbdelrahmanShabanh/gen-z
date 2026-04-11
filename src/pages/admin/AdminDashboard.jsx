@@ -43,13 +43,12 @@ export default function AdminDashboard() {
   if (loading) return <div className="page-loader"><div className="spinner"/></div>;
 
   return (
-    <div className="admin-page container">
+    <div className="admin-page">
       <div className="admin-header">
         <div>
-          <h1 className="section-title">Admin Dashboard</h1>
+          <h1 className="section-title">Overview</h1>
           <p className="admin-sub">Store overview and recent activity</p>
         </div>
-        <button className="btn btn-outline" onClick={handleLogout}>Logout</button>
       </div>
 
       <div className="stats-grid">
@@ -103,7 +102,7 @@ export default function AdminDashboard() {
       </div>
 
       <style>{`
-        .admin-page { padding-top: 3rem; padding-bottom: 6rem; }
+        .admin-page { padding-top: 1rem; padding-bottom: 2rem; }
         .admin-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; }
         .admin-sub { color: var(--text-muted); margin-top: 0.25rem; }
         
