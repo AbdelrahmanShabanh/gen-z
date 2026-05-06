@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /api/
+Disallow: /checkout
+Disallow: /order-success
+Disallow: /order-tracking
+
+Sitemap: https://gen-z-xi-teal.vercel.app/sitemap.xml
