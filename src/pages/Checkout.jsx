@@ -1,31 +1,31 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useCart } from '../context/CartContext.jsx';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useCart } from "../context/CartContext.jsx";
 
 const SHIPPING_FEES = {
-  'Cairo': 50,
-  'Alexandria': 60,
-  'Other': 70
+  Cairo: 50,
+  Alexandria: 60,
+  Other: 70,
 };
 
 export default function Checkout() {
   const { items, cartTotal } = useCart();
   const navigate = useNavigate();
-  
+
   const [formData, setFormData] = useState({
-    customerName: '',
-    phone: '',
-    address: '',
-    city: 'Cairo', // default
-    notes: ''
+    customerName: "",
+    phone: "",
+    address: "",
+    city: "Cairo", // default
+    notes: "",
   });
-  
+
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   // Protect route
   useEffect(() => {
-    if (items.length === 0) navigate('/cart', { replace: true });
+    if (items.length === 0) navigate("/cart", { replace: true });
   }, [items, navigate]);
 
   if (items.length === 0) return null;
@@ -33,40 +33,43 @@ export default function Checkout() {
   const shippingFee = SHIPPING_FEES[formData.city];
   const grandTotal = cartTotal + shippingFee;
 
-  const handleChange = (e) => setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleChange = (e) =>
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
 
     try {
       const orderData = {
         ...formData,
-        items: items.map(i => ({
+        items: items.map((i) => ({
           productId: i.product._id,
           name: i.product.name,
           size: i.size,
           qty: i.qty,
           price: i.product.price,
-          image: i.product.images?.[0]
+          image: i.product.images?.[0],
         })),
-        total: grandTotal
+        total: grandTotal,
       };
 
-      const res = await fetch('/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(orderData)
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderData),
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to place order');
+      if (!res.ok) throw new Error(data.error || "Failed to place order");
 
       // WhatsApp Message Generation
-      const itemsList = items.map(i => `- ${i.qty}x ${i.product.name} (Size: ${i.size})`).join('%0a');
+      const itemsList = items
+        .map((i) => `- ${i.qty}x ${i.product.name} (Size: ${i.size})`)
+        .join("%0a");
       const waMessage = `*New Order Request*%0a%0a*Name:* ${formData.customerName}%0a*Phone:* ${formData.phone}%0a*Address:* ${formData.address}, ${formData.city}%0a%0a*Items:*%0a${itemsList}%0a%0a*Total:* ${grandTotal} EGP%0a*Order ID:* ${data._id}`;
-      window.open(`https://wa.me/201556207709?text=${waMessage}`, '_blank');
+      window.open(`https://wa.me/201556207709?text=${waMessage}`, "_blank");
 
       // Navigate to success page with order ID
       navigate(`/order-success?orderId=${data._id}`, { replace: true });
@@ -82,29 +85,57 @@ export default function Checkout() {
 
       <div className="checkout-grid">
         <form className="checkout-form" onSubmit={handleSubmit}>
-          
           <div className="form-section">
             <h2 className="form-section-title">Shipping Information</h2>
-            
+
             <div className="form-group">
               <label className="form-label">Full Name</label>
-              <input type="text" name="customerName" required className="form-input" value={formData.customerName} onChange={handleChange} placeholder="John Doe" />
+              <input
+                type="text"
+                name="customerName"
+                required
+                className="form-input"
+                value={formData.customerName}
+                onChange={handleChange}
+                placeholder="John Doe"
+              />
             </div>
 
             <div className="form-group">
               <label className="form-label">Phone Number</label>
-              <input type="tel" name="phone" required className="form-input" value={formData.phone} onChange={handleChange} placeholder="01X XXXX XXXX" />
+              <input
+                type="tel"
+                name="phone"
+                required
+                className="form-input"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder="01X XXXX XXXX"
+              />
             </div>
 
             <div className="form-row">
-              <div className="form-group" style={{flex: 2}}>
+              <div className="form-group" style={{ flex: 2 }}>
                 <label className="form-label">Detailed Address</label>
-                <input type="text" name="address" required className="form-input" value={formData.address} onChange={handleChange} placeholder="Street name, building, apt" />
+                <input
+                  type="text"
+                  name="address"
+                  required
+                  className="form-input"
+                  value={formData.address}
+                  onChange={handleChange}
+                  placeholder="Street name, building, apt"
+                />
               </div>
 
-              <div className="form-group" style={{flex: 1}}>
+              <div className="form-group" style={{ flex: 1 }}>
                 <label className="form-label">City</label>
-                <select name="city" className="form-input form-select" value={formData.city} onChange={handleChange}>
+                <select
+                  name="city"
+                  className="form-input form-select"
+                  value={formData.city}
+                  onChange={handleChange}
+                >
                   <option value="Cairo">Cairo</option>
                   <option value="Alexandria">Alexandria</option>
                   <option value="Other">Other City</option>
@@ -114,7 +145,14 @@ export default function Checkout() {
 
             <div className="form-group">
               <label className="form-label">Order Notes (Optional)</label>
-              <textarea name="notes" className="form-input" value={formData.notes} onChange={handleChange} placeholder="Any special instructions for delivery" rows="3" />
+              <textarea
+                name="notes"
+                className="form-input"
+                value={formData.notes}
+                onChange={handleChange}
+                placeholder="Any special instructions for delivery"
+                rows="3"
+              />
             </div>
           </div>
 
@@ -125,33 +163,47 @@ export default function Checkout() {
                 <input type="radio" checked readOnly id="cod" />
                 <label htmlFor="cod">Cash on Delivery (COD)</label>
               </div>
-              <p className="payment-desc">Pay with cash upon delivery. Easy and secure.</p>
+              <p className="payment-desc">
+                Pay with cash upon delivery. Easy and secure.
+              </p>
             </div>
           </div>
 
           {error && <div className="alert alert-error mb-4">{error}</div>}
 
-          <button type="submit" className="btn btn-primary btn-lg full-width submit-btn" disabled={loading}>
-            {loading ? 'Processing...' : 'Place Order'}
+          <button
+            type="submit"
+            className="btn btn-primary btn-lg full-width submit-btn"
+            disabled={loading}
+          >
+            {loading ? "Processing..." : "Place Order"}
           </button>
         </form>
 
         <div className="checkout-sidebar">
           <div className="order-summary-box">
             <h3 className="summary-title">Order Summary</h3>
-            
+
             <div className="summary-items">
-              {items.map(item => (
-                <div key={`${item.product._id}-${item.size}`} className="sum-item">
+              {items.map((item) => (
+                <div
+                  key={`${item.product._id}-${item.size}`}
+                  className="sum-item"
+                >
                   <div className="sum-img-wrap">
-                    <img src={item.product.images?.[0]} alt={item.product.name} />
+                    <img
+                      src={item.product.images?.[0]}
+                      alt={item.product.name}
+                    />
                     <span className="sum-qty">{item.qty}</span>
                   </div>
                   <div className="sum-info">
                     <p className="sum-name">{item.product.name}</p>
                     <p className="sum-size">Size: {item.size}</p>
                   </div>
-                  <div className="sum-price">{item.product.price * item.qty} EGP</div>
+                  <div className="sum-price">
+                    {item.product.price * item.qty} EGP
+                  </div>
                 </div>
               ))}
             </div>
