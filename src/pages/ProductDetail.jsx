@@ -15,7 +15,23 @@ export default function ProductDetail() {
   const [selectedSize, setSelectedSize] = useState('');
   const [sizeError, setSizeError] = useState(false);
 
+  // Reviews Data
+  const [reviews, setReviews] = useState([
+    { id: 1, name: 'أحمد محمود', rating: 5, text: 'خامة ممتازة جدا وتوصيل سريع، المقاس مظبوط بالظبط.', date: '2 days ago' },
+    { id: 2, name: 'مصطفى كمال', rating: 4, text: 'التيشيرت شكله جامد بس يفضل تطلب مقاس أكبر من مقاسك.', date: '1 week ago' },
+    { id: 3, name: 'عمر طارق', rating: 5, text: 'أحسن كواليتي شوفتها للسعر ده، شكراً Gen Z!', date: '2 weeks ago' }
+  ]);
+  const [newReview, setNewReview] = useState('');
+  const [newRating, setNewRating] = useState(5);
+
+  // Wishlist Logic
+  const [isWishlisted, setIsWishlisted] = useState(false);
+
   useEffect(() => {
+    // Check wishlist
+    const savedWishlist = JSON.parse(localStorage.getItem('genzfront_wishlist') || '[]');
+    setIsWishlisted(savedWishlist.includes(id));
+
     setLoading(true);
     fetch(`/api/products/${id}`)
       .then(res => {
@@ -54,6 +70,34 @@ export default function ProductDetail() {
         btn.style.color = '';
       }
     }, 2000);
+  };
+
+  const toggleWishlist = () => {
+    const list = JSON.parse(localStorage.getItem('genzfront_wishlist') || '[]');
+    let newList;
+    if (isWishlisted) {
+      newList = list.filter(item => item !== id);
+    } else {
+      newList = [...list, id];
+    }
+    localStorage.setItem('genzfront_wishlist', JSON.stringify(newList));
+    setIsWishlisted(!isWishlisted);
+  };
+
+  const handleReviewSubmit = (e) => {
+    e.preventDefault();
+    if (!newReview.trim()) return;
+    
+    const submittedReview = {
+      id: Date.now(),
+      name: 'ضيف (أنت)',
+      rating: newRating,
+      text: newReview,
+      date: 'Just now'
+    };
+    
+    setReviews([submittedReview, ...reviews]);
+    setNewReview('');
   };
 
   if (loading) return <div className="page-loader"><div className="spinner" /></div>;
@@ -101,7 +145,12 @@ export default function ProductDetail() {
 
         {/* Info */}
         <div className="detail-info">
-          <h1 className="detail-title">{product.name}</h1>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <h1 className="detail-title">{product.name}</h1>
+            <button onClick={toggleWishlist} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.5rem', color: isWishlisted ? 'red' : 'currentColor' }}>
+              {isWishlisted ? '❤️' : '♡'}
+            </button>
+          </div>
           <p className="detail-price">{product.price} EGP</p>
           
           <p className="detail-desc">{product.description}</p>
@@ -175,6 +224,45 @@ export default function ProductDetail() {
               <p>2-3 days in Cairo, 3-4 days in Alex.</p>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div className="reviews-section" style={{ marginTop: '4rem', padding: '2rem', background: 'var(--bg-card)', borderRadius: '12px', border: '1px solid var(--border)' }}>
+        <h2 style={{ marginBottom: '1.5rem', fontSize: '1.5rem' }}>Customer Reviews</h2>
+        
+        <form onSubmit={handleReviewSubmit} style={{ marginBottom: '2rem' }}>
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '1rem' }}>
+            <label>Rating:</label>
+            <select value={newRating} onChange={(e) => setNewRating(Number(e.target.value))} style={{ padding: '0.5rem', borderRadius: '4px' }}>
+              <option value={5}>5 Stars ★★★★★</option>
+              <option value={4}>4 Stars ★★★★☆</option>
+              <option value={3}>3 Stars ★★★☆☆</option>
+              <option value={2}>2 Stars ★★☆☆☆</option>
+              <option value={1}>1 Star  ★☆☆☆☆</option>
+            </select>
+          </div>
+          <textarea 
+            value={newReview}
+            onChange={(e) => setNewReview(e.target.value)}
+            placeholder="Write your review here (Arabic supported)..." 
+            style={{ width: '100%', padding: '1rem', minHeight: '100px', borderRadius: '8px', border: '1px solid var(--border)', marginBottom: '1rem', fontFamily: 'inherit' }}
+          />
+          <button type="submit" className="btn btn-primary" style={{ padding: '0.75rem 2rem' }}>Post Review</button>
+        </form>
+
+        <div className="reviews-list" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          {reviews.map(review => (
+            <div key={review.id} className="review-card" style={{ padding: '1.5rem', background: 'var(--bg)', borderRadius: '8px', border: '1px solid var(--border)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                <strong>{review.name}</strong>
+                <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{review.date}</span>
+              </div>
+              <div style={{ color: 'gold', marginBottom: '0.5rem', fontSize: '1.2rem' }}>
+                {'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}
+              </div>
+              <p style={{ lineHeight: '1.6', fontSize: '1rem' }} dir="auto">{review.text}</p>
+            </div>
+          ))}
         </div>
       </div>
 

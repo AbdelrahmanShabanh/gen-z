@@ -63,6 +63,11 @@ export default function Checkout() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to place order');
 
+      // WhatsApp Message Generation
+      const itemsList = items.map(i => `- ${i.qty}x ${i.product.name} (Size: ${i.size})`).join('%0a');
+      const waMessage = `*New Order Request*%0a%0a*Name:* ${formData.customerName}%0a*Phone:* ${formData.phone}%0a*Address:* ${formData.address}, ${formData.city}%0a%0a*Items:*%0a${itemsList}%0a%0a*Total:* ${grandTotal} EGP%0a*Order ID:* ${data._id}`;
+      window.open(`https://wa.me/201556207709?text=${waMessage}`, '_blank');
+
       // Navigate to success page with order ID
       navigate(`/order-success?orderId=${data._id}`, { replace: true });
     } catch (err) {
