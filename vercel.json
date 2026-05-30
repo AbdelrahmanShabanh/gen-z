@@ -2,7 +2,15 @@
   "buildCommand": "vite build",
   "outputDirectory": "dist",
   "framework": "vite",
-  "rewrites": [{ "source": "/api/(.*)", "destination": "/api/$1" }],
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/admin/:path*", "destination": "/index.html" },
+    { "source": "/products/:path*", "destination": "/index.html" },
+    { "source": "/cart", "destination": "/index.html" },
+    { "source": "/checkout", "destination": "/index.html" },
+    { "source": "/order-success", "destination": "/index.html" },
+    { "source": "/track-order", "destination": "/index.html" }
+  ],
   "headers": [
     {
       "source": "/api/(.*)",
