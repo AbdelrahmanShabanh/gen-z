@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 
-dotenv.config({ path: '.env.local' });
+dotenv.config(); // Load standard .env file
+dotenv.config({ path: '.env.local' }); // Load .env.local file
 
 let isConnected = false;
 
@@ -40,6 +41,11 @@ const OrderSchema = new mongoose.Schema({
 
 export async function connectDB() {
   if (isConnected) return;
+  
+  if (!process.env.MONGODB_URI) {
+    throw new Error('Database connection failed: process.env.MONGODB_URI is undefined. Please ensure your .env or .env.local file is configured correctly.');
+  }
+
   await mongoose.connect(process.env.MONGODB_URI);
   isConnected = true;
 }
