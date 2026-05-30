@@ -1,8 +1,13 @@
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
 
-dotenv.config();
-dotenv.config({ path: ".env.local" });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.resolve(__dirname, "../../.env") });
+dotenv.config({ path: path.resolve(__dirname, "../../.env.local") });
 
 export function verifyAdmin(req, res) {
   const token = req.headers.authorization?.split(" ")[1];
