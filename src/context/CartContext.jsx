@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
 const CartContext = createContext();
 
@@ -15,7 +15,7 @@ export function CartProvider({ children }) {
     localStorage.setItem('genzfront_cart', JSON.stringify(items));
   }, [items]);
 
-  const addToCart = (product, size) => {
+  const addToCart = useCallback((product, size) => {
     setItems(prev => {
       const existing = prev.find(i => i.product._id === product._id && i.size === size);
       if (existing) {
@@ -27,13 +27,13 @@ export function CartProvider({ children }) {
       }
       return [...prev, { product, size, qty: 1 }];
     });
-  };
+  }, []);
 
-  const removeFromCart = (productId, size) => {
+  const removeFromCart = useCallback((productId, size) => {
     setItems(prev => prev.filter(i => !(i.product._id === productId && i.size === size)));
-  };
+  }, []);
 
-  const updateQty = (productId, size, newQty) => {
+  const updateQty = useCallback((productId, size, newQty) => {
     if (newQty < 1) {
       removeFromCart(productId, size);
       return;
@@ -43,9 +43,9 @@ export function CartProvider({ children }) {
         i.product._id === productId && i.size === size ? { ...i, qty: newQty } : i
       )
     );
-  };
+  }, [removeFromCart]);
 
-  const clearCart = () => setItems([]);
+  const clearCart = useCallback(() => setItems([]), []);
 
   const cartTotal = items.reduce((sum, i) => sum + i.product.price * i.qty, 0);
   const cartCount = items.reduce((sum, i) => sum + i.qty, 0);
